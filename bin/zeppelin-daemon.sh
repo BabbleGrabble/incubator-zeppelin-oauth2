@@ -1,4 +1,5 @@
 #!/bin/bash
+[ -z "$JAVA_HOME" ] && export JAVA_HOME=/usr/java/default
 #
 # Copyright 2007 The Apache Software Foundation
 #
