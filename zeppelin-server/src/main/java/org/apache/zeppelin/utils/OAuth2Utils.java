@@ -14,30 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.zeppelin.utils;
 
-
-package org.apache.zeppelin.conf;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
+import org.apache.zeppelin.conf.ZeppelinConfiguration;
 
 /**
- * 
- * @author vgmartinez
- *
+ * Created by almacro on 9/21/2015.
  */
-public class Credentials {
-  static String aws_access_key_id = System.getenv("AWS_ACCESS_KEY_ID");
-  static String aws_secret_access_key = System.getenv("AWS_SECRET_ACCESS_KEY");
-  
-  private static AWSCredentials credentials = new BasicAWSCredentials(aws_access_key_id,
-      aws_secret_access_key);
-
-  public AWSCredentials getCredentials() {
-    return credentials;
+public class OAuth2Utils {
+  public static Boolean isOAuth2Enabled(ZeppelinConfiguration conf) {
+    return conf.useOAuth2();
   }
 
-  public static void setCredentials(AWSCredentials credentials) {
-    Credentials.credentials = credentials;
+  public static String getOAuth2VerifyURL(ZeppelinConfiguration conf) {
+    String verifyURL = null;
+    if (conf.useOAuth2()) {
+      verifyURL = conf.getOAuth2VerifyURL();
+    }
+    return verifyURL;
   }
 }

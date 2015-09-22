@@ -18,7 +18,7 @@
 package org.apache.zeppelin.conf;
 
 import java.net.URL;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -69,7 +69,7 @@ public class ZeppelinConfiguration extends XMLConfiguration {
 
   /**
    * Load from resource.
-   *
+   *url = ZeppelinConfiguration.class.getResource(ZEPPELIN_SITE_XML);
    * @throws ConfigurationException
    */
   public static ZeppelinConfiguration create() {
@@ -270,9 +270,9 @@ public class ZeppelinConfiguration extends XMLConfiguration {
 
   public String getKeyStorePath() {
     return getRelativeDir(
-        String.format("%s/%s",
-            getConfDir(),
-            getString(ConfVars.ZEPPELIN_SSL_KEYSTORE_PATH)));
+            String.format("%s/%s",
+                    getConfDir(),
+                    getString(ConfVars.ZEPPELIN_SSL_KEYSTORE_PATH)));
   }
 
   public String getKeyStoreType() {
@@ -348,18 +348,38 @@ public class ZeppelinConfiguration extends XMLConfiguration {
   }
 
   public String getRelativeDir(String path) {
-    if (path != null && path.startsWith("/")) {
+    if (path != null && path.startsWith("/") || isWindowsPath(path)) {
       return path;
     } else {
       return getString(ConfVars.ZEPPELIN_HOME) + "/" + path;
     }
   }
 
+  public boolean isWindowsPath(String path){
+    return path.matches("^[A-Za-z]:\\\\.*");
+  }
+
   public String getConfDir() {
     return getString(ConfVars.ZEPPELIN_CONF_DIR);
   }
 
+  public List<String> getAllowedOrigins()
+  {
+    if (getString(ConfVars.ZEPPELIN_ALLOWED_ORIGINS).isEmpty()) {
+      return Arrays.asList(new String[0]);
+    }
 
+    return Arrays.asList(getString(ConfVars.ZEPPELIN_ALLOWED_ORIGINS).toLowerCase().split(","));
+  }
+
+  public boolean useOAuth2() {
+    return getBoolean(ConfVars.ZEPPELIN_OAUTH2);
+  }
+
+  public String getOAuth2VerifyURL() {
+    return getString(ConfVars.ZEPPELIN_OAUTH2_VERIFY_URL);
+  }
+    
   /**
    * Wrapper class.
    *
@@ -394,18 +414,29 @@ public class ZeppelinConfiguration extends XMLConfiguration {
         + "org.apache.zeppelin.ignite.IgniteInterpreter,"
         + "org.apache.zeppelin.ignite.IgniteSqlInterpreter,"
         + "org.apache.zeppelin.lens.LensInterpreter,"
-        + "org.apache.zeppelin.cassandra.CassandraInterpreter"),
+        + "org.apache.zeppelin.cassandra.CassandraInterpreter,"
+        + "org.apache.zeppelin.geode.GeodeOqlInterpreter,"
+        + "org.apache.zeppelin.postgresql.PostgreSqlInterpreter"),
     ZEPPELIN_INTERPRETER_DIR("zeppelin.interpreter.dir", "interpreter"),
     ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT("zeppelin.interpreter.connect.timeout", 30000),
     ZEPPELIN_ENCODING("zeppelin.encoding", "UTF-8"),
     ZEPPELIN_NOTEBOOK_DIR("zeppelin.notebook.dir", "notebook"),
+    // use specified notebook (id) as homescreen
+    ZEPPELIN_NOTEBOOK_HOMESCREEN("zeppelin.notebook.homescreen", null),
+    // whether homescreen notebook will be hidden from notebook list or not
+    ZEPPELIN_NOTEBOOK_HOMESCREEN_HIDE("zeppelin.notebook.homescreen.hide", false),
     ZEPPELIN_NOTEBOOK_S3_BUCKET("zeppelin.notebook.s3.bucket", "zeppelin"),
     ZEPPELIN_NOTEBOOK_S3_USER("zeppelin.notebook.s3.user", "user"),
     ZEPPELIN_NOTEBOOK_STORAGE("zeppelin.notebook.storage", VFSNotebookRepo.class.getName()),
     ZEPPELIN_INTERPRETER_REMOTE_RUNNER("zeppelin.interpreter.remoterunner", "bin/interpreter.sh"),
     // Decide when new note is created, interpreter settings will be binded automatically or not.
     ZEPPELIN_NOTEBOOK_AUTO_INTERPRETER_BINDING("zeppelin.notebook.autoInterpreterBinding", true),
-    ZEPPELIN_CONF_DIR("zeppelin.conf.dir", "conf");
+    ZEPPELIN_CONF_DIR("zeppelin.conf.dir", "conf"),
+    // Allows a way to specify a ',' separated list of allowed origins for rest and websockets
+    // i.e. http://localhost:8080
+    ZEPPELIN_ALLOWED_ORIGINS("zeppelin.server.allowed.origins", "*"),
+    ZEPPELIN_OAUTH2("zeppelin.oauth2", false),
+    ZEPPELIN_OAUTH2_VERIFY_URL("zeppelin.oauth2.verify.url", "");
 
     private String varName;
     @SuppressWarnings("rawtypes")

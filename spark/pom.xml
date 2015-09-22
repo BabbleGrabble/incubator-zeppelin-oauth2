@@ -23,6 +23,7 @@
     <artifactId>zeppelin</artifactId>
     <groupId>org.apache.zeppelin</groupId>
     <version>0.6.0-incubating-SNAPSHOT</version>
+    <relativePath>..</relativePath>
   </parent>
 
   <groupId>org.apache.zeppelin</groupId>
@@ -761,7 +762,7 @@
                   <directory>${basedir}/../python/build</directory>
                 </fileset>
                 <fileset>
-                  <directory>${project.build.direcoty}/spark-dist</directory>
+                  <directory>${project.build.directory}/spark-dist</directory>
                 </fileset>
               </filesets>
             </configuration>
