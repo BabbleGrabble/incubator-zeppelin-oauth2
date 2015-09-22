@@ -175,7 +175,9 @@ public class ZeppelinServer extends Application {
     cxfContext.setContextPath("/");
     cxfContext.addServlet(servletHolder, "/ws/*");
     cxfContext.addFilter(new FilterHolder(CorsFilter.class), "/*",
-        EnumSet.allOf(DispatcherType.class));
+            EnumSet.allOf(DispatcherType.class));
+    cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
+            EnumSet.allOf(DispatcherType.class));
     return cxfContext;
   }
 
@@ -224,7 +226,9 @@ public class ZeppelinServer extends Application {
     cxfContext.addServlet(cxfServletHolder, "/*");
 
     cxfContext.addFilter(new FilterHolder(CorsFilter.class), "/*",
-        EnumSet.allOf(DispatcherType.class));
+            EnumSet.allOf(DispatcherType.class));
+    cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
+            EnumSet.allOf(DispatcherType.class));
     return cxfContext;
   }
 
