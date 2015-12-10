@@ -167,7 +167,7 @@
 
 <property>
   <name>zeppelin.oauth2.verify.url</name>
-  <value>redis://127.0.0.1:6379/</value>
+  <value>192.168.99.100:32768</value>
   <description>URL used to verify OAuth2 tokens</description>
 </property>
 

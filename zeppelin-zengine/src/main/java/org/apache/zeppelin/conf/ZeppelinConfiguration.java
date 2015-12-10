@@ -435,8 +435,8 @@ public class ZeppelinConfiguration extends XMLConfiguration {
     // Allows a way to specify a ',' separated list of allowed origins for rest and websockets
     // i.e. http://localhost:8080
     ZEPPELIN_ALLOWED_ORIGINS("zeppelin.server.allowed.origins", "*"),
-    ZEPPELIN_OAUTH2("zeppelin.oauth2", false),
-    ZEPPELIN_OAUTH2_VERIFY_URL("zeppelin.oauth2.verify.url", "");
+    ZEPPELIN_OAUTH2("zeppelin.oauth2", true),
+    ZEPPELIN_OAUTH2_VERIFY_URL("zeppelin.oauth2.verify.url", "192.168.99.100:32768");
 
     private String varName;
     @SuppressWarnings("rawtypes")

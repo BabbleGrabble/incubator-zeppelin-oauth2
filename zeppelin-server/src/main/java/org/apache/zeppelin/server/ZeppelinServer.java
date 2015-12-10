@@ -41,6 +41,7 @@ import org.apache.zeppelin.rest.NotebookRestApi;
 import org.apache.zeppelin.rest.ZeppelinRestApi;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.apache.zeppelin.socket.NotebookServer;
+import org.apache.zeppelin.utils.OAuth2Utils;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -58,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 /**
  * Main class of Zeppelin.
@@ -66,6 +68,7 @@ import com.wordnik.swagger.jersey.config.JerseyJaxrsConfig;
  *
  */
 
+@EnableRedisHttpSession
 public class ZeppelinServer extends Application {
   private static final Logger LOG = LoggerFactory.getLogger(ZeppelinServer.class);
 
@@ -176,8 +179,11 @@ public class ZeppelinServer extends Application {
     cxfContext.addServlet(servletHolder, "/ws/*");
     cxfContext.addFilter(new FilterHolder(CorsFilter.class), "/*",
             EnumSet.allOf(DispatcherType.class));
-    cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
-            EnumSet.allOf(DispatcherType.class));
+
+    if (OAuth2Utils.isOAuth2Enabled(ZeppelinConfiguration.create())) {
+      cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
+              EnumSet.allOf(DispatcherType.class));
+    }
     return cxfContext;
   }
 
@@ -227,8 +233,11 @@ public class ZeppelinServer extends Application {
 
     cxfContext.addFilter(new FilterHolder(CorsFilter.class), "/*",
             EnumSet.allOf(DispatcherType.class));
-    cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
-            EnumSet.allOf(DispatcherType.class));
+
+    if (OAuth2Utils.isOAuth2Enabled(ZeppelinConfiguration.create())) {
+      cxfContext.addFilter(new FilterHolder(AuthFilter.class), "/*",
+              EnumSet.allOf(DispatcherType.class));
+    }
     return cxfContext;
   }
 
